@@ -1,0 +1,11 @@
+#!/usr/bin/expect -f
+spawn /bin/sh -c "python3 -m manage createsuperuser"
+expect -re "Username (leave blank to use 'root'): "
+send "djadmin\r"
+expect -re "Email address:"
+send "djadmin@admin.local\r"
+expect -re "Password:"
+send "bnMB7BI4\r"
+expect -re "Password (again):"
+send "bnMB7BI4\r"
+expect -re "Superuser created successfully."

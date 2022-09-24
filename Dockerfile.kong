@@ -1,0 +1,13 @@
+FROM revomatico/docker-kong-oidc:2.8.1-1
+
+ENV KONG_X_SESSION_STORAGE=shm \
+    KONG_PLUGINS=bundled,oidc \
+    KONG_X_SESSION_NAME=oidc_session \
+    KONG_DATABASE=postgres \
+    KONG_PROXY_ACCESS_LOG=/dev/stdout \
+    KONG_ADMIN_ACCESS_LOG=/dev/stdout \
+    KONG_PROXY_ERROR_LOG=/dev/stderr \
+    KONG_ADMIN_ERROR_LOG=/dev/stderr
+
+
+

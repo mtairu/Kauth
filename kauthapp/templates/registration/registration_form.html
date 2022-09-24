@@ -1,0 +1,30 @@
+{% extends "./base.html" %}
+
+{% load i18n %}
+{% block title %}User Registration{% endblock %}
+{% block content %}
+<div class="ui container">
+  <div class="ui stackable grid">
+
+    <div class="five wide column">
+      <p></p>
+    </div>
+
+    <div class="six wide column">
+      <form class="ui form" method="post" action=".">
+        {% csrf_token %}
+        {{ form.as_table }}
+        <input class="ui fluid button green auth-button-margin" type="submit" value="{% trans 'Sign Up' %}">
+      </form>
+      <div class="ui divider"></div>
+
+      <div class="ui two column grid">
+        <div class="column"><a href="/google" class="ui fluid button google plus icon">Google</a></div>
+        <div class="column"><a href="/facebook" class="ui fluid button facebook icon">Facebook</a></div>
+      </div>
+
+    </div>
+
+  </div>
+</div>
+{% endblock %}

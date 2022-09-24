@@ -1,0 +1,35 @@
+{% extends "registration/base.html" %}
+{% load i18n %}
+{% block title %}Provision{% endblock %}
+{% block content %}
+<div class="ui container">
+<div class="ui stackable grid">
+  <div class="five wide column"></div>
+  <div class="six wide column">
+  <h2 class="ui header">
+    <div class="content">Secure your account</div>
+    <div class="sub header">Set a password</div>
+  </h2>
+
+    <form class="ui tiny form" method="post" path="/accounts/register/">
+      {% csrf_token %} 
+      {{ form.as_div }}
+    
+      <input class="ui fluid button green no-radius" type="submit" value="Continue">
+    </form>
+    
+  </div>
+</div>
+</div>
+<script>
+$("document").ready(function () {
+  $("input#id_username").prop("readonly", "true");
+  $("input#id_email").prop("readonly", "true");
+  $(".ui.form.tiny").find("ul.errorlist").hide();
+  $(".ui.form.tiny").find("div.required").filter(":nth-child(4)").addClass("info field");
+  $(".ui.form.tiny").find("div.required").filter(":nth-child(5)").addClass("info field");
+});
+</script>
+{% endblock %}
+
+

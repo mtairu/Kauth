@@ -1,0 +1,36 @@
+{% extends "registration/base.html" %}
+{% load i18n %}
+{% block title %}Login{% endblock %}
+{% block content %}
+<div class="ui container">
+<div class="ui stackable grid">
+  <div class="five wide column"></div>
+  <div class="six wide column">
+
+    <form class="ui form" method="post" action=".">
+      {% csrf_token %} 
+      {{ form.as_table }}
+    
+      <input class="ui button green auth-button-margin no-radius" type="submit" value="{% trans 'Log in' %}" />
+      <input type="hidden" name="next" value="{{ next }}" />
+    </form>
+    
+    <div class="ui list">
+      <div class="item">Forgot password <a href="{% url 'auth_password_reset' %}">Reset it</a>!</div>
+      <div class="item">Not member <a href="{% url 'registration_register' %}">Register</a>!</li></div>
+      {{ msg }}
+    </div>
+  </div>
+</div>
+</div>
+{% endblock %}
+
+<script>
+  $(document).ready(function () {
+      $("input:text").css({'color': 'green'});
+  });
+
+      
+
+  </script>
+

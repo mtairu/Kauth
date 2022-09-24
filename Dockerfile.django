@@ -1,0 +1,33 @@
+FROM python:3.10-alpine
+WORKDIR /usr/src/app
+
+COPY /kauthapp/requirements.txt ./
+COPY kauthapp .
+
+RUN pip install --no-cache-dir -r requirements.txt
+RUN apk add expect
+
+ENV  DJ_DB_NAME=django \
+     DJ_DB_USER=django \
+     DJ_DB_PASS=django \
+     DJ_DB_HOST=database-1.cczlbrbs05gb.us-east-1.rds.amazonaws.com \
+     DJ_SECRET_KEY='hkOCm7P86AsGHZampyL8mxeSBysJPbC_DITA14J7llU' \
+     DJ_DEBUG='True' \
+     DJ_HOSTNAME_STRICT=https://app.kauth.okzk.com \
+     DJ_ALLOWED_HOSTS=* \
+     DJ_G_CLIENT_ID='' \
+     DJ_G_CLIENT_SEC='' \
+     DJ_G_AUTH_URI='' \
+     DJ_G_TOKEN_URI='' \
+     DJ_G_SCOPES='["openid", "https://www.googleapis.com/auth/userinfo.email", "https://www.googleapis.com/auth/userinfo.profile"]' \
+     DJ_CALLBACK_PATH='/oauth2callback' \
+     DJ_K_CLIENT_ID='' \
+     DJ_K_CLIENT_SEC='' \
+     DJ_K_TOKEN_URI='https://oidc.kauth.okzk.com/realms/master/protocol/openid-connect/token' \
+     DJ_K_TOKEN_REVOKE_URI='https://oidc.kauth.okzk.com/realms/master/protocol/openid-connect/revoke'
+
+RUN ./migrate.sh
+RUN ./create-admin.sh
+
+
+ENTRYPOINT ["./start-gunicorn.sh"]

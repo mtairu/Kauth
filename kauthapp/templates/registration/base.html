@@ -1,0 +1,98 @@
+{% load i18n %}
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <script src="https://cdn.jsdelivr.net/npm/jquery@3.6.1/dist/jquery.min.js" integrity="sha256-o88AwQnZB+VDvE9tvIXrMQaPlFFSUTR+nldQm1LuPXQ=" crossorigin="anonymous"></script>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/fomantic-ui@2.8.8/dist/semantic.min.css" integrity="sha256-ckBg2pN9ZF9KPn+vY00JXAkdqE1nv20iGM2haZhCBl4=" crossorigin="anonymous">
+    <style>
+      .menu.large.borderless {
+        border-top: 0 !important;
+        border-left: 0 !important;
+        border-right: 0 !important;
+        margin-top: 0 !important;
+      }
+
+      .flexbox-site {
+        display: flex;
+        min-height: 80vh;
+        flex-direction: column;
+      }
+  
+      .flexbox-site-content {
+        flex: 1;
+      }
+  
+      .no-border {
+        border: 0 !important;
+      }
+  
+      .no-radius {
+        border-radius: 0 !important;
+      }
+
+      .no-shadow {
+        box-shadow: none !important;
+      }
+  
+      .h-item {
+        font-weight: 700 !important;
+        font-size: 25px !important;
+      }
+      .foot-inline {
+        display: inline !important;
+      }
+
+      .helptext {
+        display: none; 
+      }
+
+      .auth-button-margin {
+        margin-top: 5px !important;
+      }
+      input[type="text"], input[type="email"], input[type="password"] {
+        border-radius: 0 !important;
+        margin-bottom: 10px !important;
+      }
+      form.oauth-provision-form {
+        font-weight: bold !important;
+      }
+
+    </style>
+  </head>
+    <title>{% block title %}{% endblock %}</title>
+</head>
+
+<body>
+         <div class="ui menu large borderless no-shadow">
+          <div class="ui attached container">
+
+            <div class="h-item item">Kauth</div>
+            <div class="right menu">
+              <a class="item" href="/accounts/login" >Sign in</a>
+              <div class="item">
+                <a class="ui primary button" href="/accounts/register">Sign up</a>
+              </div>
+            </div>
+          </div>
+        </div>
+      <!-- top menu ends -->
+      
+        <div class="ui hidden divider"></div>
+
+
+    <div id="content">
+    {% block content %}{% endblock %}
+    </div>
+
+    <div id="footer">
+    {% block footer %}
+
+    {% endblock %}
+    </div>
+</body>
+
+</html>
