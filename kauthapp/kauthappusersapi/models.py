@@ -13,6 +13,16 @@ class AccessToken(models.Model):
     issued_at = models.DateTimeField(auto_now=True)
 
 
+class Credential(models.Model):
+    user = models.OneToOneField(User, null=False, on_delete=models.CASCADE)
+    client_id = models.CharField(max_length=255, null=False, unique=True)
+    client_secret = models.CharField(max_length=255, null=False, unique=True)
+    realm = models.CharField(default="KEYCLOAK", max_length=8, unique=True)
+
+    def __str__(self):
+        return self.user.email
+
+
 class UserData(models.Model):
     user = models.OneToOneField(User, null=False, on_delete=models.CASCADE)
     content = models.TextField()

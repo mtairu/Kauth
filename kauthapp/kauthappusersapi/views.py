@@ -2,7 +2,7 @@ import base64
 from http import HTTPStatus
 from django.contrib.auth import authenticate
 
-from .models import UserData, UserDataPoint, AccessToken
+from .models import UserData, UserDataPoint, AccessToken, Credential
 from .serializers import (
     UserDataSerializer,
     UserDataPointSerializer,
@@ -17,11 +17,16 @@ from core.settings import TOAuthConfig as OAUTHCONFIG
 import requests as rq
 
 
+def get_creds():
+    return Credential.objects.get(realm="KEYCLOAK")
+
+
 def gen_token():
     """Generate token on keycloak on behalf of an authenticated user"""
+    C = get_creds()
     payload = {
-        "client_id": OAUTHCONFIG.keycloak.client_id,
-        "client_secret": OAUTHCONFIG.keycloak.client_secret,
+        "client_id": C.client_id,
+        "client_secret": C.client_secret,
         "grant_type": "client_credentials",
     }
     resp = rq.post(OAUTHCONFIG.keycloak.token_uri, data=payload).json()

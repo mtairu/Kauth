@@ -133,8 +133,6 @@ DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 # OAuth & OIDC
 @dataclasses.dataclass
 class TGOAuthCredentials:
-    client_id: str = environ["DJ_G_CLIENT_ID"]
-    client_secret: str = environ["DJ_G_CLIENT_SEC"]
     auth_uri: str = environ["DJ_G_AUTH_URI"]
     token_uri: str = environ["DJ_G_TOKEN_URI"]
     scopes = ast.literal_eval(environ["DJ_G_SCOPES"])
@@ -142,8 +140,6 @@ class TGOAuthCredentials:
 
 @dataclasses.dataclass
 class TKeycloak:
-    client_id: str = environ["DJ_K_CLIENT_ID"]
-    client_secret: str = environ["DJ_K_CLIENT_SEC"]
     token_uri: str = environ["DJ_K_TOKEN_URI"]
     token_rovoke_uri: str = environ["DJ_K_TOKEN_REVOKE_URI"]
 
