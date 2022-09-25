@@ -1,6 +1,8 @@
 from django.shortcuts import redirect, render
 from django.contrib.auth.decorators import login_required
+from django.forms.models import model_to_dict
 from core.settings import TOAuthConfig as OAUTHCONFIG
+from kauthappusersapi.models import AccessToken
 
 from registration.forms import RegistrationFormUniqueEmail
 
@@ -68,7 +70,17 @@ def oauth_provision_setup(request):
 
 @login_required
 def profile(request):
-    return render(request, "kauthappusers/profile.html")
+    try:
+        T = AccessToken.objects.filter(user_id__exact=request.user.id).order_by(
+            "-issued_at"
+        )[0]
+    except IndexError:
+        T = AccessToken({"access_token": "None Generated"})
+    return render(
+        request,
+        "kauthappusers/profile.html",
+        {"token": T.access_token, "dt": str(T.issued_at)},
+    )
 
 
 def facebook_oauth(request):

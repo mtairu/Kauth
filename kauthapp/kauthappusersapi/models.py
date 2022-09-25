@@ -12,9 +12,6 @@ class AccessToken(models.Model):
     expires = models.IntegerField(default=86400, unique=False)
     issued_at = models.DateTimeField(auto_now=True)
 
-    def __str__(self):
-        return self.email
-
 
 class UserData(models.Model):
     user = models.OneToOneField(User, null=False, on_delete=models.CASCADE)
