@@ -1,0 +1,6 @@
+1. Token management for user
+    - generate token in dashboard
+    - should allow user generate token only
+    - should only display the latest token
+   Add client secret and key to admin account
+    - update model to hold keycloak client_sec and client_key

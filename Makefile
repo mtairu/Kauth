@@ -1,4 +1,9 @@
 build-clean: prune-containers prune-images prune-all
+dj-setenv:	
+	grep -P '^DJ' .dev.env > /tmp/.djvars && sed -i 's/DJ/export DJ/g' /tmp/.djvars
+dj-checkenv:
+	env | grep '^DJ' | tr '=' '\t' | awk '{print $$1}'
+
 
 prune-containers:
 	sudo docker container prune --force
