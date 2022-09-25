@@ -1,13 +1,21 @@
 {% load i18n %}
 <!DOCTYPE html>
 <html lang="en">
-
-<head>
+  <head>
     <meta charset="utf-8" />
-    <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-    <script src="https://cdn.jsdelivr.net/npm/jquery@3.6.1/dist/jquery.min.js" integrity="sha256-o88AwQnZB+VDvE9tvIXrMQaPlFFSUTR+nldQm1LuPXQ=" crossorigin="anonymous"></script>
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/fomantic-ui@2.8.8/dist/semantic.min.css" integrity="sha256-ckBg2pN9ZF9KPn+vY00JXAkdqE1nv20iGM2haZhCBl4=" crossorigin="anonymous">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <script
+      src="https://cdn.jsdelivr.net/npm/jquery@3.6.1/dist/jquery.min.js"
+      integrity="sha256-o88AwQnZB+VDvE9tvIXrMQaPlFFSUTR+nldQm1LuPXQ="
+      crossorigin="anonymous"
+    ></script>
+    <link
+      rel="stylesheet"
+      href="https://cdn.jsdelivr.net/npm/fomantic-ui@2.8.8/dist/semantic.min.css"
+      integrity="sha256-ckBg2pN9ZF9KPn+vY00JXAkdqE1nv20iGM2haZhCBl4="
+      crossorigin="anonymous"
+    />
     <style>
       .menu.large.borderless {
         border-top: 0 !important;
@@ -21,15 +29,15 @@
         min-height: 80vh;
         flex-direction: column;
       }
-  
+
       .flexbox-site-content {
         flex: 1;
       }
-  
+
       .no-border {
         border: 0 !important;
       }
-  
+
       .no-radius {
         border-radius: 0 !important;
       }
@@ -37,80 +45,97 @@
       .no-shadow {
         box-shadow: none !important;
       }
-  
+
+      .to-upper {
+        text-transform: uppercase !important;
+        font-weight: 400 !important;
+      }
       .h-item {
         font-weight: 700 !important;
         font-size: 25px !important;
+        padding-left: 0% !important;
       }
       .foot-inline {
         display: inline !important;
       }
 
       .helptext {
-        display: none; 
+        display: none;
       }
 
       .auth-button-margin {
         margin-top: 5px !important;
       }
-      input[type="text"], input[type="email"], input[type="password"] {
+      input[type="text"],
+      input[type="email"],
+      input[type="password"] {
         border-radius: 0 !important;
         margin-bottom: 10px !important;
       }
       form.oauth-provision-form {
         font-weight: bold !important;
       }
-
     </style>
   </head>
-    <title>{% block title %}{% endblock %}</title>
-</head>
+  <title>{% block title %}{% endblock %}</title>
 
-<body>
-         <div class="ui menu large borderless no-shadow">
-          <div class="ui attached container">
+  <body>
 
-            <div class="h-item item">Kauth</div>
-            <div class="right menu">
-              <a class="item" href="#" >{{ data.email }}</a>
+    <div class="ui menu large borderless no-shadow">
+      <div class="ui attached container">
+
+          <div class="h-item item"><i class="puzzle piece icon"></i>Kauth</div>
+          <div class="right menu">
+              <a class="item" href="#">{{ data.email }}</a>
               <div class="item">
-                <a class="ui primary button" href="/accounts/logout">Sign out</a>
+                  <a class="ui primary button" href="/accounts/logout">Sign out</a>
               </div>
-            </div>
           </div>
-        </div>
-      <!-- top menu ends -->
-      
-        <div class="ui hidden divider"></div>
-
-
-    <div id="content">
-<div class="ui attached container">
-<div class="ui stackable grid">
-  <div class=" column">
-  <h2 class="ui header">
-    <div class="content">Profile</div>
-    <div class="sub header">Name: {{data.name}}</div>
-    <div class="sub header">Email: {{data.email}}</div>
-    <div class="sub header">Google Avatar: {{data.avatar}}</div>
-  </h2>
-  <h2 class="ui header">
-    <div class="content">API Credentials</div>
-    <div class="sub header">Access Token: 
-    <input disabled type="text"
-      value={{token.access_token}}
-    >
-</div>
-  </h2>
+      </div>
   </div>
-</div>
-</div>
-    </div>
+    <!-- top menu ends -->
 
-    <div id="footer">
-    {% block footer %}
-    {% endblock %}
-    </div>
-</body>
+    <div class="ui hidden divider"></div>
 
+<div class="ui masthead vertical segment">
+  <div id="content">
+    <div class="ui container">
+
+
+      <div class="ui grid container">
+        <div class="twelve wide column">
+          <h1 class="ui header">Access Tokens
+            <div class="sub header">You will need access tokens to work with the REST API.
+            </div>
+          </h1>
+        </div>
+        <div class="four wide column">
+          <button class="ui fluid button">
+            New Token
+          </button>
+        </div>
+
+
+      </div>
+
+
+      <div class="ui  divider"></div>
+
+
+      <form class="ui form">
+        <div class="field ">
+          <label>Issued_at: {{ dt }}
+          </label>
+          <input type="text" readonly value={{ token }}>
+        </div>
+
+      </form>
+
+
+
+    </div>
+  </div>
+
+    <div id="footer">{% block footer %} {% endblock %}</div>
+  </body>
 </html>

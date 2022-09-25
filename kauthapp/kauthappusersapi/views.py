@@ -1,18 +1,37 @@
-from typing import Any
+import base64
 from http import HTTPStatus
+from django.contrib.auth import authenticate
+
 from .models import UserData, UserDataPoint, AccessToken
 from .serializers import (
     UserDataSerializer,
     UserDataPointSerializer,
     AccessTokenSerializer,
 )
-
+from rest_framework.decorators import action
 from rest_framework.views import Response, exception_handler
 from rest_framework import viewsets
 from rest_framework.response import Response
-import requests as rq
+from rest_framework.exceptions import APIException, AuthenticationFailed
 from core.settings import TOAuthConfig as OAUTHCONFIG
-from rest_framework.exceptions import APIException
+import requests as rq
+
+
+def gen_token():
+    """Generate token on keycloak on behalf of an authenticated user"""
+    payload = {
+        "client_id": OAUTHCONFIG.keycloak.client_id,
+        "client_secret": OAUTHCONFIG.keycloak.client_secret,
+        "grant_type": "client_credentials",
+    }
+    resp = rq.post(OAUTHCONFIG.keycloak.token_uri, data=payload).json()
+    return resp
+
+
+class NotAllowedToViewException(APIException):
+    status_code = 405
+    default_detail = "Not Allowed"
+    default_code = "Not Allowed"
 
 
 class UserDataView(viewsets.ModelViewSet):
@@ -25,34 +44,33 @@ class UserDataPointView(viewsets.ModelViewSet):
     serializer_class = UserDataPointSerializer
 
 
-class AccessTokenView(viewsets.ModelViewSet):
+class AccessTokenView(viewsets.ReadOnlyModelViewSet):
     queryset = AccessToken.objects.all()
     serializer_class = AccessTokenSerializer
 
-    def retrieve(self, request):
-        ...
-
     def list(self, request):
-        ...
+        raise NotAllowedToViewException
 
-    def create(self, request):
-        try:
-            U = UserData.objects.get(email=request.data.get("email"))
-        except Exception as err:
-            raise APIException(err)
+    def retrieve(self, request, pk):
+        raise NotAllowedToViewException
 
-        payload = {
-            "client_id": OAUTHCONFIG.keycloak.client_id,
-            "client_secret": OAUTHCONFIG.keycloak.client_secret,
-            "grant_type": "client_credentials",
-        }
-        resp = rq.post(OAUTHCONFIG.keycloak.token_uri, data=payload).json()
-        AccessToken.objects.create(
-            user=U.user,
-            email=request.data.get("email"),
-            access_token=resp["access_token"],
-        )
-        return Response(resp)
+    @action(detail=False)
+    def tokens(self, request):
+        if authorization := request.META.get("HTTP_AUTHORIZATION"):
+            authorization = authorization.split(" ")[1]
+            username, password = (
+                base64.b64decode(authorization).decode("utf-8").split(":")
+            )
+        else:
+            raise AuthenticationFailed()
+
+        if U := authenticate(username=username, password=password):
+            token = gen_token()
+        else:
+            raise AuthenticationFailed()
+
+        AccessToken.objects.create(access_token=token["access_token"], user=U)
+        return Response(token)
 
 
 def api_exception_handler(exc: Exception, context):

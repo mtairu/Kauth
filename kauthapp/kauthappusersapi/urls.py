@@ -6,7 +6,7 @@ from .views import UserDataView, UserDataPointView, AccessTokenView
 router = routers.SimpleRouter()
 router.register(r"userdata", UserDataView)
 router.register(r"userdatapoints", UserDataPointView)
-router.register(r"oauth/tokens", AccessTokenView)
+router.register(r"oauth", AccessTokenView)
 
 urlpatterns = [
     path("", include(router.urls)),

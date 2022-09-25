@@ -41,7 +41,7 @@ INSTALLED_APPS = [
 
 MIDDLEWARE = [
     "django.middleware.security.SecurityMiddleware",
-     'whitenoise.middleware.WhiteNoiseMiddleware',
+    "whitenoise.middleware.WhiteNoiseMiddleware",
     "django.contrib.sessions.middleware.SessionMiddleware",
     "django.middleware.common.CommonMiddleware",
     "django.middleware.csrf.CsrfViewMiddleware",
@@ -117,14 +117,12 @@ STATIC_URL = "static/"
 STATIC_ROOT = BASE_DIR / "staticfiles"
 STATICFILES_STORAGE = "whitenoise.storage.CompressedStaticFilesStorage"
 
-
 # Registration redux
 REGISTRATION_OPEN = True
 REGISTRATION_AUTO_LOGIN = False
 LOGIN_REDIRECT_URL = "/profile"
 
 REST_FRAMEWORK = {
-    # other settings
     "EXCEPTION_HANDLER": "kauthappusersapi.views.api_exception_handler",
 }
 # Default primary key field type
