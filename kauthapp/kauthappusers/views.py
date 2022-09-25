@@ -1,19 +1,15 @@
 from django.shortcuts import redirect, render
-from django.forms.models import model_to_dict
-from django.dispatch import receiver
-from django.http import HttpResponse
 from django.contrib.auth.decorators import login_required
 from core.settings import TOAuthConfig as OAUTHCONFIG
 
 from registration.forms import RegistrationFormUniqueEmail
-from registration.signals import user_registered
-from kauthappusersapi.models import UserData, AccessToken
-
 
 from requests_oauthlib import OAuth2Session
 
+
 def landing_page(request):
     return redirect("/accounts/register/")
+
 
 def oauth_google(request):
     oauth = OAuth2Session(
@@ -59,41 +55,20 @@ def oauth_provision_setup(request):
                 "username": request.session["OAUTH_P"]["email"],
             }
         )
-        return render(request, "kauthappusers/provision.html", context={"form": F})
+        return render(
+            request,
+            "kauthappusers/provision.html",
+            context={"form": F},
+        )
 
     F = RegistrationFormUniqueEmail(request.POST)
-    new_user = F.save()
-    user_registered.send(sender=F.__class__, user=new_user, request=request)
-    return redirect("/profile") 
+    F.save()
+    return redirect("/profile")
 
-
-@receiver(signal=user_registered)
-def oauth_provision_complete(request, sender, user, **kwargs):
-    if request.session.get("OAUTH_P"):
-        UserData.objects.create(
-            user=user,
-            name=request.session["OAUTH_P"]["name"],
-            email=request.session["OAUTH_P"]["email"],
-            avatar=request.session["OAUTH_P"]["picture"],
-        )
-    else:
-        UserData.objects.create(user=user, name=user.username, email=user.email)
-    return HttpResponse()
 
 @login_required
 def profile(request):
-    U = UserData.objects.get(email=request.user.email)
-    try:
-        T = AccessToken.objects.filter(email__startswith=request.user.email).order_by(
-            "-issued_at"
-        )[0]
-    except Exception:
-        T = AccessToken({"access_token": ""})
-    return render(
-        request,
-        "kauthappusers/profile.html",
-        {"data": model_to_dict(U), "token": model_to_dict(T)},
-    )
+    return render(request, "kauthappusers/profile.html")
 
 
 def facebook_oauth(request):
