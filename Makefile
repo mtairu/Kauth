@@ -34,7 +34,6 @@ push-keycloak:
 	sudo docker build -f Dockerfile.keycloak . -t keycloak-build --no-cache
 	sudo docker tag keycloak-build:latest public.ecr.aws/${ECS_REGISTRY_ALIAS}/keycloak-build:latest
 	sudo docker push public.ecr.aws/${ECS_REGISTRY_ALIAS}/keycloak-build:latest
-
 push-kong:
 	sudo docker build -f Dockerfile.kong . -t kong-build --no-cache
 	sudo docker tag kong-build:latest public.ecr.aws/${ECS_REGISTRY_ALIAS}/kong-build:latest
@@ -43,5 +42,9 @@ push-nginx:
 	sudo docker build -f Dockerfile.nginx . -t nginx-build --no-cache
 	sudo docker tag nginx-build:latest public.ecr.aws/${ECS_REGISTRY_ALIAS}/nginx-build:latest
 	sudo docker push public.ecr.aws/${ECS_REGISTRY_ALIAS}/nginx-build:latest
+push-django:
+	sudo docker build -f Dockerfile.django . -t django-build --no-cache
+	sudo docker tag django-build:latest public.ecr.aws/${ECS_REGISTRY_ALIAS}/django-build:latest
+	sudo docker push public.ecr.aws/${ECS_REGISTRY_ALIAS}/django-build:latest
 login-aws-cli:
 	sudo aws ecr-public get-login-password --region ${ECS_REGION} | docker login --username AWS --password-stdin public.ecr.aws/${ECS_REGISTRY_ALIAS}
