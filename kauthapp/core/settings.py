@@ -135,6 +135,8 @@ DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 class TGOAuthCredentials:
     auth_uri: str = environ["DJ_G_AUTH_URI"]
     token_uri: str = environ["DJ_G_TOKEN_URI"]
+    client_id: str = environ["DJ_G_CLIENT_ID"]
+    client_secret: str = environ["DJ_G_CLIENT_SEC"]
     scopes = ast.literal_eval(environ["DJ_G_SCOPES"])
 
 
