@@ -21,5 +21,5 @@ urlpatterns = [
     path("admin/", admin.site.urls),
     path("accounts/", include("registration.backends.simple.urls")),
     path("", include("kauthappusers.urls")),
-    path("v1/", include("kauthappusersapi.urls")),
+    path("api/v1/", include("kauthappusersapi.urls")),
 ]
