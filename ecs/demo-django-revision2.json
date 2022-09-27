@@ -1,0 +1,163 @@
+{
+    "taskDefinitionArn": "arn:aws:ecs:us-east-1:589757191689:task-definition/demo-django:2",
+    "containerDefinitions": [
+        {
+            "name": "django",
+            "image": "public.ecr.aws/s3m5f7o5/django-build",
+            "cpu": 0,
+            "links": [],
+            "portMappings": [
+                {
+                    "containerPort": 8080,
+                    "hostPort": 8080,
+                    "protocol": "tcp"
+                }
+            ],
+            "essential": true,
+            "entryPoint": [],
+            "command": [],
+            "environment": [
+                {
+                    "name": "DJ_G_CLIENT_ID",
+                    "value": "722009149708-f4c4h83381t733no40r861ud4kgdg5e3.apps.googleusercontent.com"
+                },
+                {
+                    "name": "DJ_DEBUG",
+                    "value": "False"
+                },
+                {
+                    "name": "DJ_K_TOKEN_REVOKE_URI",
+                    "value": "https://oidc.kauth.okzk.com/realms/master/protocol/openid-connect/revoke"
+                },
+                {
+                    "name": "DJ_HOSTNAME_STRICT",
+                    "value": "https://app.kauth.okzk.com"
+                },
+                {
+                    "name": "DJ_ALLOWED_HOSTS",
+                    "value": "*"
+                },
+                {
+                    "name": "DJ_G_AUTH_URI",
+                    "value": "https://accounts.google.com/o/oauth2/au"
+                },
+                {
+                    "name": "DJ_K_TOKEN_URI",
+                    "value": "https://oidc.kauth.okzk.com/realms/master/protocol/openid-connect/token"
+                },
+                {
+                    "name": "DJ_G_TOKEN_URI",
+                    "value": "https://oauth2.googleapis.com/token"
+                },
+                {
+                    "name": "DJ_G_SCOPES",
+                    "value": "[\"openid\", \"https://www.googleapis.com/auth/userinfo.email\", \"https://www.googleapis.com/auth/userinfo.profile\"]"
+                },
+                {
+                    "name": "DJ_DB_HOST",
+                    "value": "database-1.cczlbrbs05gb.us-east-1.rds.amazonaws.com"
+                },
+                {
+                    "name": "DJ_DB_USER",
+                    "value": "django"
+                },
+                {
+                    "name": "DJ_DB_NAME",
+                    "value": "django"
+                },
+                {
+                    "name": "DJ_G_CLIENT_SEC",
+                    "value": "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"
+                },
+                {
+                    "name": "DJ_DB_PASS",
+                    "value": "django"
+                },
+                {
+                    "name": "DJ_CALLBACK_PATH",
+                    "value": "/oauth2callback"
+                }
+            ],
+            "environmentFiles": [],
+            "mountPoints": [],
+            "volumesFrom": [],
+            "secrets": [],
+            "dnsServers": [],
+            "dnsSearchDomains": [],
+            "extraHosts": [],
+            "dockerSecurityOptions": [],
+            "dockerLabels": {},
+            "ulimits": [],
+            "logConfiguration": {
+                "logDriver": "awslogs",
+                "options": {
+                    "awslogs-create-group": "true",
+                    "awslogs-group": "/ecs/demo-django",
+                    "awslogs-region": "us-east-1",
+                    "awslogs-stream-prefix": "ecs"
+                },
+                "secretOptions": []
+            },
+            "systemControls": []
+        }
+    ],
+    "family": "demo-django",
+    "taskRoleArn": "arn:aws:iam::589757191689:role/ecsTaskExecutionRole",
+    "executionRoleArn": "arn:aws:iam::589757191689:role/ecsTaskExecutionRole",
+    "networkMode": "awsvpc",
+    "revision": 2,
+    "volumes": [],
+    "status": "ACTIVE",
+    "requiresAttributes": [
+        {
+            "name": "com.amazonaws.ecs.capability.logging-driver.awslogs"
+        },
+        {
+            "name": "ecs.capability.execution-role-awslogs"
+        },
+        {
+            "name": "com.amazonaws.ecs.capability.docker-remote-api.1.19"
+        },
+        {
+            "name": "com.amazonaws.ecs.capability.docker-remote-api.1.17"
+        },
+        {
+            "name": "com.amazonaws.ecs.capability.task-iam-role"
+        },
+        {
+            "name": "com.amazonaws.ecs.capability.docker-remote-api.1.18"
+        },
+        {
+            "name": "ecs.capability.task-eni"
+        },
+        {
+            "name": "com.amazonaws.ecs.capability.docker-remote-api.1.29"
+        }
+    ],
+    "placementConstraints": [],
+    "compatibilities": [
+        "EC2",
+        "FARGATE"
+    ],
+    "requiresCompatibilities": [
+        "FARGATE"
+    ],
+    "cpu": "1024",
+    "memory": "2048",
+    "runtimePlatform": {
+        "cpuArchitecture": "X86_64",
+        "operatingSystemFamily": "LINUX"
+    },
+    "registeredAt": "2022-09-26T10:05:40.649Z",
+    "registeredBy": "arn:aws:iam::589757191689:root",
+    "tags": [
+        {
+            "key": "ecs:taskDefinition:createdFrom",
+            "value": "ecs-console-v2"
+        },
+        {
+            "key": "ecs:taskDefinition:stackId",
+            "value": "arn:aws:cloudformation:us-east-1:589757191689:stack/ECS-Console-V2-TaskDefinition-2c80b53f-64b6-47c3-8258-7e9b564253cc/c2b30b70-3d82-11ed-aa70-1255ca2e1ccd"
+        }
+    ]
+}

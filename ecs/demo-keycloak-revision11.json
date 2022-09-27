@@ -1,0 +1,135 @@
+{
+    "taskDefinitionArn": "arn:aws:ecs:us-east-1:589757191689:task-definition/demo-keycloak:11",
+    "containerDefinitions": [
+        {
+            "name": "keycloak",
+            "image": "public.ecr.aws/s3m5f7o5/keycloak-build:latest",
+            "cpu": 0,
+            "links": [],
+            "portMappings": [
+                {
+                    "containerPort": 8042,
+                    "hostPort": 8042,
+                    "protocol": "tcp"
+                }
+            ],
+            "essential": true,
+            "entryPoint": [],
+            "command": [],
+            "environment": [
+                {
+                    "name": "KC_HOSTNAME_ADMIN",
+                    "value": "oidc.kauth.okzk.com"
+                },
+                {
+                    "name": "KC_DB_PASSWORD",
+                    "value": "keycloak"
+                },
+                {
+                    "name": "KC_DB_URL_PORT",
+                    "value": "5432"
+                },
+                {
+                    "name": "KC_DB_USERNAME",
+                    "value": "keycloak"
+                },
+                {
+                    "name": "KC_DB_URL_HOST",
+                    "value": "database-1.cczlbrbs05gb.us-east-1.rds.amazonaws.com"
+                },
+                {
+                    "name": "KC_HTTP_HOST",
+                    "value": "0.0.0.0"
+                },
+                {
+                    "name": "KC_DB_URL_DATABASE",
+                    "value": "keycloak"
+                },
+                {
+                    "name": "KC_HOSTNAME",
+                    "value": "oidc.kauth.okzk.com"
+                }
+            ],
+            "environmentFiles": [],
+            "mountPoints": [],
+            "volumesFrom": [],
+            "secrets": [],
+            "dnsServers": [],
+            "dnsSearchDomains": [],
+            "extraHosts": [],
+            "dockerSecurityOptions": [],
+            "dockerLabels": {},
+            "ulimits": [],
+            "logConfiguration": {
+                "logDriver": "awslogs",
+                "options": {
+                    "awslogs-create-group": "true",
+                    "awslogs-group": "/ecs/demo-keycloak",
+                    "awslogs-region": "us-east-1",
+                    "awslogs-stream-prefix": "ecs"
+                },
+                "secretOptions": []
+            },
+            "systemControls": []
+        }
+    ],
+    "family": "demo-keycloak",
+    "taskRoleArn": "arn:aws:iam::589757191689:role/ecsTaskExecutionRole",
+    "executionRoleArn": "arn:aws:iam::589757191689:role/ecsTaskExecutionRole",
+    "networkMode": "awsvpc",
+    "revision": 11,
+    "volumes": [],
+    "status": "ACTIVE",
+    "requiresAttributes": [
+        {
+            "name": "com.amazonaws.ecs.capability.logging-driver.awslogs"
+        },
+        {
+            "name": "ecs.capability.execution-role-awslogs"
+        },
+        {
+            "name": "com.amazonaws.ecs.capability.docker-remote-api.1.19"
+        },
+        {
+            "name": "com.amazonaws.ecs.capability.docker-remote-api.1.17"
+        },
+        {
+            "name": "com.amazonaws.ecs.capability.task-iam-role"
+        },
+        {
+            "name": "com.amazonaws.ecs.capability.docker-remote-api.1.18"
+        },
+        {
+            "name": "ecs.capability.task-eni"
+        },
+        {
+            "name": "com.amazonaws.ecs.capability.docker-remote-api.1.29"
+        }
+    ],
+    "placementConstraints": [],
+    "compatibilities": [
+        "EC2",
+        "FARGATE"
+    ],
+    "requiresCompatibilities": [
+        "FARGATE"
+    ],
+    "cpu": "1024",
+    "memory": "3072",
+    "runtimePlatform": {
+        "cpuArchitecture": "X86_64",
+        "operatingSystemFamily": "LINUX"
+    },
+    "registeredAt": "2022-09-19T04:31:40.646Z",
+    "registeredBy": "arn:aws:iam::589757191689:root",
+    "tags": [
+        {
+            "key": "ecs:taskDefinition:createdFrom",
+            "value": "ecs-console-v2"
+        },
+        {
+            "key": "ecs:taskDefinition:stackId",
+            "value": "arn:aws:cloudformation:us-east-1:589757191689:stack/ECS-Console-V2-TaskDefinition-645023c3-e14e-4e4d-b675-9209411c3256/f0fd1b60-37d3-11ed-9136-0a72d693ee2d"
+        }
+    ]
+}
