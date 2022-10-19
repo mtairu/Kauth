@@ -1,12 +1,14 @@
 from django.shortcuts import redirect, render
 from django.contrib.auth.decorators import login_required
-from django.forms.models import model_to_dict
+from django.dispatch import receiver
 from core.settings import TOAuthConfig as OAUTHCONFIG
-from kauthappusersapi.models import AccessToken
+from kauthappusersapi.models import AccessToken, ClientAccessToken
 
 from registration.forms import RegistrationFormUniqueEmail
+from registration.signals import user_registered
 
 from requests_oauthlib import OAuth2Session
+import requests as rq
 
 
 def landing_page(request):
@@ -64,8 +66,23 @@ def oauth_provision_setup(request):
         )
 
     F = RegistrationFormUniqueEmail(request.POST)
-    F.save()
+    new_user = F.save()
+    user_registered.send(sender=F.__class__, user=new_user, request=request)
     return redirect("/profile")
+
+
+@receiver(signal=user_registered)
+def oauth_provision_complete(request, sender, user, **kwargs):
+    new_user = {
+        "username": user.username,
+        "email": user.email,
+        "enabled": true,
+        "credentials": [
+            {"type": "password", "value": user.password, "temprorary": "false"}
+        ],
+    }
+    token = ClientAccessToken.token_get()
+    resp = rq.post(data=new_user).json()
 
 
 @login_required
