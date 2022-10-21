@@ -2,34 +2,41 @@ import base64
 from http import HTTPStatus
 from django.contrib.auth import authenticate
 
-from .models import UserData, UserDataPoint, AccessToken, Credential
+from rest_framework.decorators import action
+from rest_framework.views import Response, exception_handler
+from rest_framework import viewsets
+from rest_framework.exceptions import APIException, AuthenticationFailed
+import requests as rq
+from core.settings import TOAuthConfig as OAUTHCONFIG
+from .models import UserData, UserDataPoint, AccessToken, get_creds
+
 from .serializers import (
     UserDataSerializer,
     UserDataPointSerializer,
     AccessTokenSerializer,
 )
-from rest_framework.decorators import action
-from rest_framework.views import Response, exception_handler
-from rest_framework import viewsets
-from rest_framework.response import Response
-from rest_framework.exceptions import APIException, AuthenticationFailed
-from core.settings import TOAuthConfig as OAUTHCONFIG
-import requests as rq
 
 
-def get_creds():
-    return Credential.objects.get(realm="KEYCLOAK")
-
-
-def gen_token():
+def gen_user_access_token(username, password):
     """Generate token on keycloak on behalf of an authenticated user"""
     C = get_creds()
-    payload = {
-        "client_id": C.client_id,
-        "client_secret": C.client_secret,
-        "grant_type": "client_credentials",
+    credentials = f"{C.client_id}:{C.client_secret}"
+    auth = base64.b64encode(credentials.encode("utf-8"))
+    headers = {
+        "Authorization": f"Basic {auth.decode()}",
+        "Content-Type": "application/x-www-form-urlencoded",
     }
-    resp = rq.post(OAUTHCONFIG.keycloak.token_uri, data=payload).json()
+    payload = {
+        "grant_type": "password",
+        "username": username,
+        "password": password,
+        "client_id": C.client_id,
+    }
+    resp = rq.post(
+        OAUTHCONFIG.keycloak.token_uri,
+        headers=headers,
+        data=payload,
+    ).json()
     return resp
 
 
@@ -70,7 +77,7 @@ class AccessTokenView(viewsets.ReadOnlyModelViewSet):
             raise AuthenticationFailed()
 
         if U := authenticate(username=username, password=password):
-            token = gen_token()
+            token = gen_user_access_token(username, password)
         else:
             raise AuthenticationFailed()
 
