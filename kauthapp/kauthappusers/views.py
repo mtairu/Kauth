@@ -1,7 +1,8 @@
+import secrets
 from django.shortcuts import redirect, render
 from django.contrib.auth.decorators import login_required
 from django.dispatch import receiver
-from core.settings import TOAuthConfig as OAUTHCONFIG
+from core.settings import TOAuthConfig as OAUTHCONFIG, DJ_K_API_BASEURI
 from kauthappusersapi.models import AccessToken, ClientAccessToken
 
 from registration.forms import RegistrationFormUniqueEmail
@@ -73,16 +74,25 @@ def oauth_provision_setup(request):
 
 @receiver(signal=user_registered)
 def oauth_provision_complete(request, sender, user, **kwargs):
+    token = ClientAccessToken.token_get()
+    headers = {
+        "Authorization": f"Bearer {token.access_token}",
+        "Content-Type": "application/json",
+    }
     new_user = {
         "username": user.username,
         "email": user.email,
-        "enabled": true,
+        "enabled": "true",
         "credentials": [
-            {"type": "password", "value": user.password, "temprorary": "false"}
+            {"type": "password", "value": secrets.token_hex(6)},
+            {"temporary": "true"},
         ],
     }
-    token = ClientAccessToken.token_get()
-    resp = rq.post(data=new_user).json()
+    rq.post(
+        DJ_K_API_BASEURI + "/users/",
+        headers=headers,
+        json=new_user,
+    )
 
 
 @login_required

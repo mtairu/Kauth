@@ -8,7 +8,7 @@ from rest_framework import viewsets
 from rest_framework.exceptions import APIException, AuthenticationFailed
 import requests as rq
 from core.settings import TOAuthConfig as OAUTHCONFIG
-from .models import UserData, UserDataPoint, AccessToken, Credential, get_creds
+from .models import UserData, UserDataPoint, AccessToken, get_creds
 
 from .serializers import (
     UserDataSerializer,

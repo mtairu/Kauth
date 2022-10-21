@@ -90,13 +90,16 @@ class ClientAccessToken(models.Model):
 
     @classmethod
     def token_get(cls):
-        token = cls.objects.get(is_expired=False)
+        try:
+            token = cls.objects.get(is_expired=False)
+        except Exception:
+            token = TCredential()
 
         if timezone.now() > token.expires:
             token.is_expired = True
             token.save()
             new_token = client_credential()
-            cls.token_save(new_token)
+            cls.token_save(new_token, token.user)
             return new_token
         return token
 
