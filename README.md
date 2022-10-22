@@ -25,6 +25,7 @@
 	- `/certs` that directory holds letsencrypt ssl certs for Nginx.
 
 ## Usage
+*Update .dev.env with valid values. Current values in .dev.env should not be used in production*
 1. Clone the repository
 2. Build the docker images by running:
 	- make build-kong
