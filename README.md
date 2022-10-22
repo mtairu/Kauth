@@ -26,9 +26,15 @@
 
 ## Usage
 *Update .dev.env with valid values. Current values in .dev.env should not be used in production*
+*Image can run on Docker or AWS Fargate.*
 1. Clone the repository
 2. Build the docker images by running:
 	- make build-kong
 	- make build-nginx
 	- make build-keycloak
 	- make build-django
+3. Run on Docker using:
+	- make run-kong
+	- make run-nginx
+	- make run-keycloak
+	- make run-django
