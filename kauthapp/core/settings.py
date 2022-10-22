@@ -137,7 +137,11 @@ class TGOAuthCredentials:
     token_uri: str = environ["DJ_G_TOKEN_URI"]
     client_id: str = environ["DJ_G_CLIENT_ID"]
     client_secret: str = environ["DJ_G_CLIENT_SEC"]
-    scopes = ["openid", "https://www.googleapis.com/auth/userinfo.email", "https://www.googleapis.com/auth/userinfo.profile"]
+    scopes = [
+        "openid",
+        "https://www.googleapis.com/auth/userinfo.email",
+        "https://www.googleapis.com/auth/userinfo.profile",
+    ]
 
 
 @dataclasses.dataclass
@@ -152,3 +156,4 @@ class TOAuthConfig:
     callback_path: str = "/oauth2callback"
     hostname_strict: str = HOSTNAME_STRICT
     keycloak: TKeycloak = TKeycloak
+    realm: str = environ["DJ_K_REALM"]

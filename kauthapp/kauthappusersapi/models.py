@@ -16,7 +16,9 @@ class TCredential:
     bearer: dataclasses.InitVar[Optional[dict]] = None
     access_token: str = ""
     issued_at: datetime.datetime = timezone.now()
-    expires: datetime.datetime = datetime.datetime(1,1,1, tzinfo=datetime.timezone.utc)
+    expires: datetime.datetime = datetime.datetime(
+        1, 1, 1, tzinfo=datetime.timezone.utc
+    )
     is_expired = True
 
     def __post_init__(self, bearer: dict) -> None:
@@ -31,7 +33,7 @@ class TCredential:
 
 
 def get_creds():
-    return Credential.objects.get(realm="KEYCLOAK")
+    return Credential.objects.get(realm=OAUTHCONFIG.realm)
 
 
 def client_credential() -> TCredential:
@@ -71,36 +73,34 @@ class Credential(models.Model):
 
 class ClientAccessToken(models.Model):
     access_token = models.TextField(unique=True, null=False)
-    user = models.ForeignKey(
-        User,
-        on_delete=models.CASCADE,
-    )
     refresh_token = models.TextField(unique=True, null=True)
     issued_at = models.DateTimeField(auto_now=True)
     expires = models.DateTimeField()
     is_expired = models.BooleanField(default=False)
 
-    def token_save(self, c, user):
-        return self.objects.create(
-            user=user,
+    @classmethod
+    def token_save(cls, c):
+        return cls.objects.create(
             access_token=c.access_token,
             issued_at=c.issued_at,
             expires=c.expires,
         )
 
-    def token_get(self):
+    @classmethod
+    def token_get(cls):
         try:
-            token = self.objects.get(is_expired=False)
-        except self.DoesNotExist:
+            token = cls.objects.get(is_expired=False)
+        except cls.DoesNotExist:
+            token = ClientAccessToken()
             new_token = client_credential()
-            self.token_save(new_token, token.user)
+            cls.token_save(new_token)
             return new_token
 
         if timezone.now() > token.expires:
             token.is_expired = True
             token.save()
             new_token = client_credential()
-            self.token_save(new_token, token.user)
+            cls.token_save(new_token)
             return new_token
         return token
 
