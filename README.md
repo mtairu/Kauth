@@ -25,8 +25,10 @@
 	- `/certs` that directory holds letsencrypt ssl certs for Nginx.
 
 ## Usage
-*Update .dev.env with valid values. Current values in .dev.env should not be used in production*
-*Image can run on Docker or AWS Fargate.*
+- *Update .dev.env with valid values. Current values in .dev.env should not be used in production*
+- *Images can run on Docker or AWS Fargate.*
+
+### To run on Docker
 1. Clone the repository
 2. Build the docker images by running:
 	- make build-kong
