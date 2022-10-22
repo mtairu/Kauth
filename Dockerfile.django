@@ -24,7 +24,8 @@ ENV  DJ_DB_NAME=django \
      DJ_K_CLIENT_SEC= \
      DJ_K_TOKEN_URI= \
      DJ_K_TOKEN_REVOKE_URI= \
-     DJ_K_API_BASEURI=
+     DJ_K_API_BASEURI= \
+     DJ_K_REALM=
 
 RUN ./migrate.sh
 RUN ./create-admin.sh

@@ -18,10 +18,16 @@
 |Postgres|Kong, Django, Keycloak require database access.|
 |AWS|Container registry & AWS Fargate|
 
--  This repo contains 4 Dockerfiles, which will be used to build docker images. The images will be pushed to ECS registry.
-- `/tasks`	directory holds task definitions will can be used to start tasks or serve as a starting point for configuring new task on Fargate.
-- The Makefile can be used to run commands that:
-	-  build & push containers to AWS container registry.
-		- `make push-keycloak` will build and push the keycloak image to the registry.
-		- `make build-keycloak` will only build the image
-		- `make run-keycloak` will start a container using the keycloak image.
+- This repo contains:
+	- 4 Dockerfiles, to build docker images for Kong, Django, Keycloak and Nginx.
+	- A Makefile can be used to run commands that build, run & push docker containers to AWS container registry.
+	- `/tasks` that directory holds aws task definitions.
+	- `/certs` that directory holds letsencrypt ssl certs for Nginx.
+
+## Usage
+1. Clone the repository
+2. Build the docker images by running:
+	- make build-kong
+	- make build-nginx
+	- make build-keycloak
+	- make build-django
