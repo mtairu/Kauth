@@ -80,29 +80,27 @@ class ClientAccessToken(models.Model):
     expires = models.DateTimeField()
     is_expired = models.BooleanField(default=False)
 
-    @classmethod
-    def token_save(cls, c, user):
-        return cls.objects.create(
+    def token_save(self, c, user):
+        return self.objects.create(
             user=user,
             access_token=c.access_token,
             issued_at=c.issued_at,
             expires=c.expires,
         )
 
-    @classmethod
-    def token_get(cls):
+    def token_get(self):
         try:
-            token = cls.objects.get(is_expired=False)
-        except cls.DoesNotExist:
+            token = self.objects.get(is_expired=False)
+        except self.DoesNotExist:
             new_token = client_credential()
-            cls.token_save(new_token, token.user)
+            self.token_save(new_token, token.user)
             return new_token
 
         if timezone.now() > token.expires:
             token.is_expired = True
             token.save()
             new_token = client_credential()
-            cls.token_save(new_token, token.user)
+            self.token_save(new_token, token.user)
             return new_token
         return token
 
