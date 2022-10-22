@@ -4,6 +4,7 @@ import datetime
 from django.db import models
 from django.utils import timezone
 from django.contrib.auth.models import User
+
 from core.settings import TOAuthConfig as OAUTHCONFIG
 import requests as rq
 
@@ -15,8 +16,8 @@ class TCredential:
     bearer: dataclasses.InitVar[Optional[dict]] = None
     access_token: str = ""
     issued_at: datetime.datetime = timezone.now()
-    expires: datetime.datetime = datetime.datetime.min
-    is_expired = False
+    expires: datetime.datetime = datetime.datetime(1,1,1, tzinfo=datetime.timezone.utc)
+    is_expired = True
 
     def __post_init__(self, bearer: dict) -> None:
         if bearer:
@@ -92,8 +93,10 @@ class ClientAccessToken(models.Model):
     def token_get(cls):
         try:
             token = cls.objects.get(is_expired=False)
-        except Exception:
-            token = TCredential()
+        except cls.DoesNotExist:
+            new_token = client_credential()
+            cls.token_save(new_token, token.user)
+            return new_token
 
         if timezone.now() > token.expires:
             token.is_expired = True

@@ -19,12 +19,12 @@ ENV  DJ_DB_NAME=django \
      DJ_G_CLIENT_SEC= \
      DJ_G_AUTH_URI= \
      DJ_G_TOKEN_URI= \
-     DJ_G_SCOPES='["openid", "https://www.googleapis.com/auth/userinfo.email", "https://www.googleapis.com/auth/userinfo.profile"]' \
      DJ_CALLBACK_PATH='/oauth2callback' \
      DJ_K_CLIENT_ID= \
      DJ_K_CLIENT_SEC= \
      DJ_K_TOKEN_URI= \
-     DJ_K_TOKEN_REVOKE_URI=
+     DJ_K_TOKEN_REVOKE_URI= \
+     DJ_K_API_BASEURI=
 
 RUN ./migrate.sh
 RUN ./create-admin.sh
