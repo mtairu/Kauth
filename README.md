@@ -40,3 +40,17 @@
 	- make run-nginx
 	- make run-keycloak
 	- make run-django
+
+### To run on AWS
+*Install AWS-CLI before you proceed*
+1. Clone the repository.
+2. Add the following to your enviroment.
+	- export ECS_REGISTRY_ALIAS=<public-or-private-registry-alias>
+	- export ECS_ALIAS=<ecs-region>
+3. Login to AWS-CLI; run, make login-aws-cli.
+4. Push the images to AWS Container Registry
+	- make push-kong
+	- make push-nginx
+	- make push-keycloak
+	- make push-django
+5. Run images using task-definations
