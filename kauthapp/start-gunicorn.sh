@@ -1,3 +1,3 @@
 #!/bin/sh
 
-gunicorn -w 3 -b 0.0.0.0:8080 core.wsgi
+gunicorn --workers 3 --bind 0.0.0.0:8080 --log-level debug --proxy-allow-from "*" --forwarded-allow-ips "*" core.wsgi

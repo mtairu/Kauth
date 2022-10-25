@@ -22,7 +22,7 @@ build-django:
 	sudo docker build -f Dockerfile.django . -t django-build --no-cache
 
 run-kong:
-	sudo docker run -d -p 127.0.0.1:8000:8000 -p 127.0.0.1:8001:8001 --env-file .dev.env kong-build
+	sudo docker run -d --net=host -p 127.0.0.1:8000:8000 -p 127.0.0.1:8001:8001 --env-file .dev.env kong-build
 run-keycloak:
 	sudo docker run -d -p 127.0.0.1:8042:8042 --env-file .dev.env keycloak-build
 run-nginx:
