@@ -13,7 +13,6 @@ whitenoise = "*"
 django-registration-redux = "*"
 requests-oauthlib = "*"
 drf-standardized-errors = "*"
-pylint = "*"
 
 [dev-packages]
 
