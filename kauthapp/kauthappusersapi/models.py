@@ -36,8 +36,8 @@ def get_creds():
     return Credential.objects.get(realm=OAUTHCONFIG.realm)
 
 
-def client_credential() -> TCredential:
-    """Manage authentication and retrival of tokens."""
+def client_access_token() -> TCredential:
+    """Request client access token from Keycloak server"""
     C = get_creds()
     req = rq.post(
         OAUTHCONFIG.keycloak.token_uri,
@@ -92,14 +92,14 @@ class ClientAccessToken(models.Model):
             token = cls.objects.get(is_expired=False)
         except cls.DoesNotExist:
             token = ClientAccessToken()
-            new_token = client_credential()
+            new_token = client_access_token()
             cls.token_save(new_token)
             return new_token
 
         if timezone.now() > token.expires:
             token.is_expired = True
             token.save()
-            new_token = client_credential()
+            new_token = client_access_token()
             cls.token_save(new_token)
             return new_token
         return token
