@@ -8,7 +8,7 @@ from rest_framework import viewsets
 from rest_framework.exceptions import APIException, AuthenticationFailed
 import requests as rq
 from core.settings import TOAuthConfig as OAUTHCONFIG
-from .models import UserData, UserDataPoint, AccessToken, get_creds
+from .models import UserData, UserDataPoint, UserAccessToken, OauthClient
 
 from .serializers import (
     UserDataSerializer,
@@ -19,7 +19,7 @@ from .serializers import (
 
 def gen_user_access_token(username, password):
     """Generate token on keycloak on behalf of an authenticated user"""
-    C = get_creds()
+    C = OauthClient.objects.get(realm=OAUTHCONFIG.realm)
     credentials = f"{C.client_id}:{C.client_secret}"
     auth = base64.b64encode(credentials.encode("utf-8"))
     headers = {
@@ -57,7 +57,7 @@ class UserDataPointView(viewsets.ModelViewSet):
 
 
 class AccessTokenView(viewsets.ReadOnlyModelViewSet):
-    queryset = AccessToken.objects.all()
+    queryset = UserAccessToken.objects.all()
     serializer_class = AccessTokenSerializer
 
     def list(self, request):
@@ -81,7 +81,7 @@ class AccessTokenView(viewsets.ReadOnlyModelViewSet):
         else:
             raise AuthenticationFailed()
 
-        AccessToken.objects.create(access_token=token["access_token"], user=U)
+        UserAccessToken.objects.create(access_token=token["access_token"], user=U)
         return Response(token)
 
 

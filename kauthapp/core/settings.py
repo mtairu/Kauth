@@ -22,6 +22,7 @@ DEBUG = ast.literal_eval(str(environ.get("DJ_DEBUG")))
 ALLOWED_HOSTS = [environ.get("DJ_ALLOWED_HOSTS")]
 CSRF_TRUSTED_ORIGINS = [HOSTNAME_STRICT]
 DJ_K_API_BASEURI = environ["DJ_K_API_BASEURI"]
+DJ_KONG_ADMINAPI_BASEURI=environ["DJ_KONG_ADMINAPI_BASEURI"]
 
 # Application definition
 

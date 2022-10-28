@@ -1,5 +1,5 @@
 from rest_framework.serializers import ModelSerializer
-from .models import UserData, UserDataPoint, AccessToken
+from .models import UserData, UserDataPoint, UserAccessToken
 
 
 class UserDataSerializer(ModelSerializer):
@@ -16,5 +16,5 @@ class UserDataPointSerializer(ModelSerializer):
 
 class AccessTokenSerializer(ModelSerializer):
     class Meta:
-        model = AccessToken
+        model = UserAccessToken
         exclude = ()

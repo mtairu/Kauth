@@ -4,4 +4,4 @@ from .models import *
 # Register your models here.
 admin.site.register(UserData)
 admin.site.register(UserDataPoint)
-admin.site.register(Credential)
+admin.site.register(OauthClient)

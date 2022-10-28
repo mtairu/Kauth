@@ -1,67 +1,15 @@
-import dataclasses
-from typing import Optional
-import datetime
 from django.db import models
-from django.utils import timezone
 from django.contrib.auth.models import User
-
-from core.settings import TOAuthConfig as OAUTHCONFIG
+from django.utils import timezone
 import requests as rq
+from core.settings import TOAuthConfig as OAUTHCONFIG
+from kauthappusersapi.typedefs import TCredential
 
 
-@dataclasses.dataclass
-class TCredential:
-    """Build credential obj"""
-
-    bearer: dataclasses.InitVar[Optional[dict]] = None
-    access_token: str = ""
-    issued_at: datetime.datetime = timezone.now()
-    expires: datetime.datetime = datetime.datetime(
-        1, 1, 1, tzinfo=datetime.timezone.utc
-    )
-    is_expired = True
-
-    def __post_init__(self, bearer: dict) -> None:
-        if bearer:
-            self.access_token = bearer["access_token"]
-            self.expires = self.issued_at + timezone.timedelta(
-                seconds=bearer["expires_in"]
-            )
-
-    def asdict(self) -> dict:
-        return dataclasses.asdict(self)
-
-
-def get_creds():
-    return Credential.objects.get(realm=OAUTHCONFIG.realm)
-
-
-def client_access_token() -> TCredential:
-    """Request client access token from Keycloak server"""
-    C = get_creds()
-    req = rq.post(
-        OAUTHCONFIG.keycloak.token_uri,
-        data={
-            "grant_type": "client_credentials",
-            "client_id": C.client_id,
-            "client_secret": C.client_secret,
-        },
-    )
-    return TCredential(req.json())
-
-
-class AccessToken(models.Model):
-    access_token = models.TextField(unique=True, null=False)
-    user = models.ForeignKey(
-        User,
-        on_delete=models.CASCADE,
-    )
-    refresh_token = models.TextField(unique=True, null=True)
-    expires = models.IntegerField(default=86400, unique=False)
-    issued_at = models.DateTimeField(auto_now=True)
-
-
-class Credential(models.Model):
+class OauthClient(models.Model):
+    """
+    Manages Credentials for Keycloak clients
+    """
     user = models.OneToOneField(User, null=False, on_delete=models.CASCADE)
     client_id = models.CharField(max_length=255, null=False, unique=True)
     client_secret = models.CharField(max_length=255, null=False, unique=True)
@@ -71,19 +19,58 @@ class Credential(models.Model):
         return self.user.email
 
 
+class UserAccessToken(models.Model):
+    """
+    Manages access tokens for Keycloak users
+    Rename to OauthUserToken
+    """
+
+    access_token = models.TextField(unique=True, null=False)
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    refresh_token = models.TextField(unique=True, null=True)
+    expires = models.IntegerField(default=86400, unique=False)
+    is_expired = models.BooleanField(default=False)
+    issued_at = models.DateTimeField(auto_now=True)
+
+
+class ApiKey(models.Model):
+    key = models.CharField(null=False, max_length=255, unique=True)
+    issued_at = models.DateTimeField(auto_now=True)
+    user = models.ForeignKey(User, on_delete=models.CASCADE, null=True)
+
+
 class ClientAccessToken(models.Model):
+    """
+    Manages access tokens for Keycloak client
+    Rename to OauthClientToken
+    """
+
     access_token = models.TextField(unique=True, null=False)
     refresh_token = models.TextField(unique=True, null=True)
     issued_at = models.DateTimeField(auto_now=True)
-    expires = models.DateTimeField()
+    expires = models.IntegerField(default=86400, unique=False)
     is_expired = models.BooleanField(default=False)
+    client = models.ForeignKey(OauthClient, on_delete=models.CASCADE)
+
+    @classmethod
+    def client_access_token(cls) -> TCredential:
+        """Request client access token from Keycloak server"""
+        C = OauthClient.objects.get(realm=OAUTHCONFIG.realm)
+
+        req = rq.post(
+            OAUTHCONFIG.keycloak.token_uri,
+            data={
+                "grant_type": "client_credentials",
+                "client_id": C.client_id,
+                "client_secret": C.client_secret,
+            },
+        )
+        return TCredential(req.json())
 
     @classmethod
     def token_save(cls, c):
         return cls.objects.create(
-            access_token=c.access_token,
-            issued_at=c.issued_at,
-            expires=c.expires,
+            access_token=c.access_token, issued_at=c.issued_at, expires=c.expires
         )
 
     @classmethod
@@ -92,14 +79,14 @@ class ClientAccessToken(models.Model):
             token = cls.objects.get(is_expired=False)
         except cls.DoesNotExist:
             token = ClientAccessToken()
-            new_token = client_access_token()
+            new_token = cls.client_access_token()
             cls.token_save(new_token)
             return new_token
 
         if timezone.now() > token.expires:
             token.is_expired = True
             token.save()
-            new_token = client_access_token()
+            new_token = cls.client_access_token()
             cls.token_save(new_token)
             return new_token
         return token
