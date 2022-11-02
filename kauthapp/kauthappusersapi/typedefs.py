@@ -3,6 +3,8 @@ from typing import Optional
 import datetime
 
 from django.utils import timezone
+from django.db import models
+
 
 @dataclasses.dataclass
 class TCredential:
@@ -15,6 +17,7 @@ class TCredential:
         1, 1, 1, tzinfo=datetime.timezone.utc
     )
     is_expired = True
+    client: models.Model = None
 
     def __post_init__(self, bearer: dict) -> None:
         if bearer:

@@ -10,6 +10,7 @@ class OauthClient(models.Model):
     """
     Manages Credentials for Keycloak clients
     """
+
     user = models.OneToOneField(User, null=False, on_delete=models.CASCADE)
     client_id = models.CharField(max_length=255, null=False, unique=True)
     client_secret = models.CharField(max_length=255, null=False, unique=True)
@@ -33,12 +34,6 @@ class UserAccessToken(models.Model):
     issued_at = models.DateTimeField(auto_now=True)
 
 
-class ApiKey(models.Model):
-    key = models.CharField(null=False, max_length=255, unique=True)
-    issued_at = models.DateTimeField(auto_now=True)
-    user = models.ForeignKey(User, on_delete=models.CASCADE, null=True)
-
-
 class ClientAccessToken(models.Model):
     """
     Manages access tokens for Keycloak client
@@ -48,13 +43,18 @@ class ClientAccessToken(models.Model):
     access_token = models.TextField(unique=True, null=False)
     refresh_token = models.TextField(unique=True, null=True)
     issued_at = models.DateTimeField(auto_now=True)
-    expires = models.IntegerField(default=86400, unique=False)
+    expires = models.DateTimeField()
     is_expired = models.BooleanField(default=False)
     client = models.ForeignKey(OauthClient, on_delete=models.CASCADE)
 
     @classmethod
     def client_access_token(cls) -> TCredential:
-        """Request client access token from Keycloak server"""
+        """
+        Request client access token from Keycloak server
+
+        todo:
+        - Move to services.py
+        """
         C = OauthClient.objects.get(realm=OAUTHCONFIG.realm)
 
         req = rq.post(
@@ -65,31 +65,47 @@ class ClientAccessToken(models.Model):
                 "client_secret": C.client_secret,
             },
         )
-        return TCredential(req.json())
+        return TCredential(req.json(), client=C)
 
     @classmethod
-    def token_save(cls, c):
+    def token_save(cls, c: TCredential):
+        """Save a new token"""
         return cls.objects.create(
-            access_token=c.access_token, issued_at=c.issued_at, expires=c.expires
+            access_token=c.access_token,
+            issued_at=c.issued_at,
+            client=c.client,
+            expires=c.expires,
         )
 
     @classmethod
     def token_get(cls):
+
         try:
             token = cls.objects.get(is_expired=False)
         except cls.DoesNotExist:
-            token = ClientAccessToken()
             new_token = cls.client_access_token()
-            cls.token_save(new_token)
-            return new_token
+            return cls.token_save(new_token)
 
         if timezone.now() > token.expires:
             token.is_expired = True
             token.save()
             new_token = cls.client_access_token()
-            cls.token_save(new_token)
-            return new_token
+            return cls.token_save(new_token)
         return token
+
+
+class ApiKey(models.Model):
+    """
+    Manages APIKEYS from Kong
+    Keys are credentials for users to generate accesstokens.
+    """
+
+    key = models.CharField(null=False, max_length=255, unique=True)
+    issued_at = models.DateTimeField(auto_now=True)
+    user = models.ForeignKey(User, on_delete=models.CASCADE, null=False)
+
+    def __str__(self):
+        return self.user.email
 
 
 class UserData(models.Model):
