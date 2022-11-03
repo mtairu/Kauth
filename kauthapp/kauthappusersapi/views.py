@@ -1,43 +1,17 @@
-import base64
 from http import HTTPStatus
-from django.contrib.auth import authenticate
 
 from rest_framework.decorators import action
 from rest_framework.views import Response, exception_handler
 from rest_framework import viewsets
 from rest_framework.exceptions import APIException, AuthenticationFailed
-import requests as rq
-from core.settings import TOAuthConfig as OAUTHCONFIG
-from .models import UserData, UserDataPoint, UserAccessToken, OauthClient
+from kauthappusers.services import keycloak_access_token
+from kauthappusersapi.models import UserData, UserDataPoint, UserAccessToken, ApiKey
 
 from .serializers import (
     UserDataSerializer,
     UserDataPointSerializer,
     AccessTokenSerializer,
 )
-
-
-def gen_user_access_token(username, password):
-    """Generate token on keycloak on behalf of an authenticated user"""
-    C = OauthClient.objects.get(realm=OAUTHCONFIG.realm)
-    credentials = f"{C.client_id}:{C.client_secret}"
-    auth = base64.b64encode(credentials.encode("utf-8"))
-    headers = {
-        "Authorization": f"Basic {auth.decode()}",
-        "Content-Type": "application/x-www-form-urlencoded",
-    }
-    payload = {
-        "grant_type": "password",
-        "username": username,
-        "password": password,
-        "client_id": C.client_id,
-    }
-    resp = rq.post(
-        OAUTHCONFIG.keycloak.token_uri,
-        headers=headers,
-        data=payload,
-    ).json()
-    return resp
 
 
 class NotAllowedToViewException(APIException):
@@ -68,21 +42,16 @@ class AccessTokenView(viewsets.ReadOnlyModelViewSet):
 
     @action(detail=False)
     def tokens(self, request):
-        if authorization := request.META.get("HTTP_AUTHORIZATION"):
-            authorization = authorization.split(" ")[1]
-            username, password = (
-                base64.b64decode(authorization).decode("utf-8").split(":")
+        apikey = request.META.get("HTTP_APIKEY")
+        if valid := ApiKey.valid(apikey):
+            token = keycloak_access_token()
+            UserAccessToken.objects.create(
+                access_token=token["access_token"],
+                user=valid.user,
+                identifier=token["access_token"].split(".")[0],
             )
-        else:
-            raise AuthenticationFailed()
-
-        if U := authenticate(username=username, password=password):
-            token = gen_user_access_token(username, password)
-        else:
-            raise AuthenticationFailed()
-
-        UserAccessToken.objects.create(access_token=token["access_token"], user=U)
-        return Response(token)
+            return Response(token)
+        raise AuthenticationFailed()
 
 
 def api_exception_handler(exc: Exception, context):
