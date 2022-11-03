@@ -48,9 +48,10 @@ class AccessTokenView(viewsets.ReadOnlyModelViewSet):
             UserAccessToken.objects.create(
                 access_token=token["access_token"],
                 user=valid.user,
+                identifier=token["access_token"].split(".")[0],
             )
             return Response(token)
-        raise ApiKey.DoesNotExist
+        raise AuthenticationFailed()
 
 
 def api_exception_handler(exc: Exception, context):
