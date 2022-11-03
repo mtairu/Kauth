@@ -39,7 +39,7 @@ class UserAccessToken(models.Model):
     """
 
     access_token = models.TextField(unique=True, null=False)
-    identifier = models.CharField(unique=True, null=False)
+    identifier = models.CharField(max_length=255, unique=True, null=False)
     user = models.ForeignKey(User, on_delete=models.CASCADE)
     refresh_token = models.TextField(unique=True, null=True)
     expires = models.IntegerField(default=86400, unique=False)
