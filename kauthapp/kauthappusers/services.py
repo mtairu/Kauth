@@ -1,16 +1,15 @@
 import dataclasses
 import hashlib
 
-from django.http import HttpResponse
+from core.settings import TOAuthConfig as OAUTHCONFIG
 import requests as rq
-from requests.exceptions import ConnectionError
 from core.settings import (
     DJ_K_API_BASEURI,
     DJ_KONG_ADMINAPI_BASEURI,
     DJ_KONG_ADMINAPI_KEY,
 )
 
-from kauthappusersapi.models import ClientAccessToken
+from kauthappusersapi.models import ClientAccessToken, OauthClient
 
 
 @dataclasses.dataclass
@@ -49,7 +48,7 @@ def kong_consumer_apikey(email):
     return TKongResponse(status_code=resp.status_code, content=resp)
 
 
-def keycloak_account(email):
+def keycloak_create_account(email):
     token = ClientAccessToken.token_get()
     headers = {
         "Authorization": f"Bearer {token.access_token}",
@@ -67,4 +66,24 @@ def keycloak_account(email):
             {"temporary": "true"},
         ],
     }
-    return rq.post(DJ_K_API_BASEURI + "/users/", headers=headers, json=new_user)
+    return rq.post(
+        DJ_K_API_BASEURI + "/users/",
+        headers=headers,
+        json=new_user,
+    ).json()
+
+
+def keycloak_access_token():
+    """Generate token on keycloak on behalf of an authenticated user"""
+    C = OauthClient.objects.get(realm=OAUTHCONFIG.realm)
+    headers = {"Content-Type": "application/x-www-form-urlencoded"}
+    data = {
+        "grant_type": "client_credentials",
+        "client_id": C.client_id,
+        "client_secret": C.client_secret,
+    }
+    return rq.post(
+        OAUTHCONFIG.keycloak.token_uri,
+        headers=headers,
+        data=data,
+    ).json()

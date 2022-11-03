@@ -8,7 +8,7 @@ from core.settings import TOAuthConfig as OAUTHCONFIG
 from .services import (
     kong_create_consumer,
     kong_consumer_apikey,
-    keycloak_account,
+    keycloak_create_account,
 )
 from kauthappusersapi.models import ApiKey
 
@@ -87,7 +87,7 @@ def oauth_provision_complete(request, sender, user, **kwargs):
             new_key = apikey.content.json()["key"]
             key = ApiKey.objects.create(key=new_key, user=user)
         if key.id:
-            keycloak_account(user.email)
+            keycloak_create_account(user.email)
 
 
 @login_required

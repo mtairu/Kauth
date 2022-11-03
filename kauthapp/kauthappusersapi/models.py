@@ -1,7 +1,10 @@
+import base64
+
 from django.db import models
 from django.contrib.auth.models import User
 from django.utils import timezone
 import requests as rq
+
 from core.settings import TOAuthConfig as OAUTHCONFIG
 from kauthappusersapi.typedefs import TCredential
 
@@ -18,6 +21,15 @@ class OauthClient(models.Model):
 
     def __str__(self):
         return self.user.email
+
+    @classmethod
+    def basic_credential(cls):
+        """Return a Keycloak client's credential in base64"""
+        C = cls.objects.get(realm=OAUTHCONFIG.realm)
+        credential = base64.b64encode(
+            f"{C.client_id}:{C.client_secret}".encode("utf-8")
+        )
+        return credential.decode()
 
 
 class UserAccessToken(models.Model):
@@ -106,6 +118,10 @@ class ApiKey(models.Model):
 
     def __str__(self):
         return self.user.email
+
+    @classmethod
+    def valid(cls, key: str):
+        return cls.objects.filter(key=key).first()
 
 
 class UserData(models.Model):
