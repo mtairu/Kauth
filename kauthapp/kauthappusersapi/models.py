@@ -46,6 +46,10 @@ class UserAccessToken(models.Model):
     is_expired = models.BooleanField(default=False)
     issued_at = models.DateTimeField(auto_now=True)
 
+    @classmethod
+    def valid(cls, key: str):
+        return cls.objects.filter(identifier=key).first()
+
 
 class ClientAccessToken(models.Model):
     """
@@ -130,7 +134,7 @@ class UserData(models.Model):
     content = models.TextField()
 
     def __str__(self):
-        return self.name
+        return self.user.username
 
 
 class UserDataPoint(models.Model):
@@ -138,4 +142,4 @@ class UserDataPoint(models.Model):
     content = models.TextField()
 
     def __str__(self):
-        return self.name
+        return self.user.username

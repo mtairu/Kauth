@@ -21,9 +21,25 @@ class NotAllowedToViewException(APIException):
 
 
 class UserDataView(viewsets.ModelViewSet):
-    queryset = UserData.objects.all()
+    queryset = UserData.objects.filter()
     serializer_class = UserDataSerializer
 
+    def get_object(self, request):
+        token = request.META.get("HTTP_TOKEN")
+        return UserAccessToken.valid(token.split('.')[0]).user.id
+
+    def create(self, request):
+        user = self.get_object(request)
+        content = request.data["content"]
+        UserData.objects.create(user_id=user, content=content)
+        return Response(status=201)
+
+    def list(self, request):
+        user = self.get_object(request)
+        items = list(UserData.objects.filter(user_id=user).values("content", "id"))
+        return Response(items)
+
+        
 
 class UserDataPointView(viewsets.ModelViewSet):
     queryset = UserDataPoint.objects.all()

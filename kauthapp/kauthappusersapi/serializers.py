@@ -1,20 +1,18 @@
-from rest_framework.serializers import ModelSerializer
+from rest_framework import serializers
 from .models import UserData, UserDataPoint, UserAccessToken
 
 
-class UserDataSerializer(ModelSerializer):
-    class Meta:
-        model = UserData
-        exclude = ()
+class UserDataSerializer(serializers.Serializer):
+        content = serializers.CharField()
+        user = serializers.IntegerField(required=False)
 
-
-class UserDataPointSerializer(ModelSerializer):
+class UserDataPointSerializer(serializers.Serializer):
     class Meta:
         model = UserDataPoint
         exclude = ()
 
 
-class AccessTokenSerializer(ModelSerializer):
+class AccessTokenSerializer(serializers.ModelSerializer):
     class Meta:
         model = UserAccessToken
         exclude = ()
