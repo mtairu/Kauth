@@ -24,26 +24,58 @@ class UserDataView(viewsets.ModelViewSet):
     queryset = UserData.objects.filter()
     serializer_class = UserDataSerializer
 
-    def get_object(self, request):
+    def get_user(self, request):
+        """
+        Validate key/identifier
+
+        Returns user object if valid, None otherwise
+
+        todo:
+            - rename, refactor
+        """
         token = request.META.get("HTTP_TOKEN")
-        return UserAccessToken.valid(token.split('.')[0]).user.id
+        return UserAccessToken.valid(token.split(".")[0]).user
 
     def create(self, request):
-        user = self.get_object(request)
+        user = self.get_user(request)
         content = request.data["content"]
-        UserData.objects.create(user_id=user, content=content)
+        UserData.objects.create(user_id=user.id, content=content)
         return Response(status=201)
 
     def list(self, request):
-        user = self.get_object(request)
-        items = list(UserData.objects.filter(user_id=user).values("content", "id"))
+        user = self.get_user(request)
+        items = list(UserData.objects.filter(user_id=user.id).values("content", "id"))
         return Response(items)
 
-        
+    def destroy(self, request, pk=None):
+        user = self.get_user(request)
+        UserData.objects.filter(user_id=user.id, pk=pk).delete()
+        return Response(status=204)
+
 
 class UserDataPointView(viewsets.ModelViewSet):
     queryset = UserDataPoint.objects.all()
     serializer_class = UserDataPointSerializer
+
+    def get_user(self, request):
+        token = request.META.get("HTTP_TOKEN")
+        return UserAccessToken.valid(token.split(".")[0]).user
+
+    def create(self, request):
+        user = self.get_user(request)
+        content = request.data["content"]
+        UserDataPoint.objects.create(user_id=user.id, content=content)
+        return Response(status=201)
+
+    def list(self, request):
+        user = self.get_user(request)
+        items = list(UserDataPoint.objects.filter(user_id=user).values("content", "id"))
+        return Response(items)
+
+    def destroy(self, request, pk=None):
+        user = self.get_user(request)
+        UserDataPoint.objects.filter(user_id=user.id, pk=pk).delete()
+        return Response(status=204)
 
 
 class AccessTokenView(viewsets.ReadOnlyModelViewSet):
