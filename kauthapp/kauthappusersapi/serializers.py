@@ -3,8 +3,10 @@ from .models import UserData, UserDataPoint, UserAccessToken
 
 
 class UserDataSerializer(serializers.Serializer):
-        content = serializers.CharField()
-        user = serializers.IntegerField(required=False)
+    class Meta:
+        model = UserData
+        exclude = ()
+
 
 class UserDataPointSerializer(serializers.Serializer):
     class Meta:
