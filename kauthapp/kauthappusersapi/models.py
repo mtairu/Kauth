@@ -7,6 +7,8 @@ import requests as rq
 
 from core.settings import TOAuthConfig as OAUTHCONFIG
 from kauthappusersapi.typedefs import TCredential
+from kauthappusers.utils import make_hash
+from django.core.exceptions import PermissionDenied
 
 
 class OauthClient(models.Model):
@@ -38,17 +40,25 @@ class UserAccessToken(models.Model):
     Rename to OauthUserToken
     """
 
-    access_token = models.TextField(unique=True, null=False)
-    identifier = models.CharField(max_length=255, unique=True, null=False)
-    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    access_token = models.TextField(unique=True, null=True)
     refresh_token = models.TextField(unique=True, null=True)
+    hash_digest = models.CharField(max_length=255, unique=True, null=False)
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
     expires = models.IntegerField(default=86400, unique=False)
     is_expired = models.BooleanField(default=False)
     issued_at = models.DateTimeField(auto_now=True)
 
     @classmethod
-    def valid(cls, key: str):
-        return cls.objects.filter(identifier=key).first()
+    def recipient(cls, request):
+        """
+        Return UserAccessToken object using the hashed_token.
+        True if found, None otherwise
+        """
+        http_token = request.META.get("HTTP_AUTHORIZATION").replace("Bearer ", "")
+        hash_digest = make_hash(http_token)
+        if user_access_token := cls.objects.filter(hash_digest=hash_digest).first():
+            return user_access_token.user
+        raise PermissionDenied
 
 
 class ClientAccessToken(models.Model):

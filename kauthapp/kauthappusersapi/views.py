@@ -4,9 +4,15 @@ from rest_framework.decorators import action
 from rest_framework.views import Response, exception_handler
 from rest_framework import viewsets
 from rest_framework.exceptions import APIException, AuthenticationFailed
-from kauthappusers.services import keycloak_access_token
-from kauthappusersapi.models import UserData, UserDataPoint, UserAccessToken, ApiKey
 
+from kauthappusers.services import keycloak_access_token
+from kauthappusers.utils import make_hash
+from kauthappusersapi.models import (
+    UserData,
+    UserDataPoint,
+    UserAccessToken,
+    ApiKey,
+)
 from .serializers import (
     UserDataSerializer,
     UserDataPointSerializer,
@@ -21,61 +27,57 @@ class NotAllowedToViewException(APIException):
 
 
 class UserDataView(viewsets.ModelViewSet):
-    queryset = UserData.objects.filter()
+    queryset = UserData.objects.all()
     serializer_class = UserDataSerializer
 
-    def get_user(self, request):
-        """
-        Validate key/identifier
-
-        Returns user object if valid, None otherwise
-
-        todo:
-            - rename, refactor
-        """
-        token = request.META.get("HTTP_TOKEN")
-        return UserAccessToken.valid(token.split(".")[0]).user
-
     def create(self, request):
-        user = self.get_user(request)
+        user = UserAccessToken.recipient(request)
         content = request.data["content"]
         UserData.objects.create(user_id=user.id, content=content)
         return Response(status=201)
 
     def list(self, request):
-        user = self.get_user(request)
+        user = UserAccessToken.recipient(request)
         items = list(UserData.objects.filter(user_id=user.id).values("content", "id"))
         return Response(items)
 
     def destroy(self, request, pk=None):
-        user = self.get_user(request)
+        user = UserAccessToken.recipient(request)
         UserData.objects.filter(user_id=user.id, pk=pk).delete()
         return Response(status=204)
+
+    def retrieve(self, request, pk=None):
+        user = UserAccessToken.recipient(request)
+        item = UserData.objects.filter(user_id=user.id, pk=pk).values("content", "id")
+        return Response(item)
 
 
 class UserDataPointView(viewsets.ModelViewSet):
     queryset = UserDataPoint.objects.all()
     serializer_class = UserDataPointSerializer
 
-    def get_user(self, request):
-        token = request.META.get("HTTP_TOKEN")
-        return UserAccessToken.valid(token.split(".")[0]).user
-
     def create(self, request):
-        user = self.get_user(request)
+        user = UserAccessToken.recipient(request)
         content = request.data["content"]
         UserDataPoint.objects.create(user_id=user.id, content=content)
         return Response(status=201)
 
     def list(self, request):
-        user = self.get_user(request)
+        user = UserAccessToken.recipient(request)
         items = list(UserDataPoint.objects.filter(user_id=user).values("content", "id"))
         return Response(items)
 
     def destroy(self, request, pk=None):
-        user = self.get_user(request)
+        user = UserAccessToken.recipient(request)
         UserDataPoint.objects.filter(user_id=user.id, pk=pk).delete()
         return Response(status=204)
+
+    def retrieve(self, request, pk=None):
+        user = UserAccessToken.recipient(request)
+        item = UserDataPoint.objects.filter(user_id=user.id, pk=pk).values(
+            "content", "id"
+        )
+        return Response(item)
 
 
 class AccessTokenView(viewsets.ReadOnlyModelViewSet):
@@ -93,10 +95,10 @@ class AccessTokenView(viewsets.ReadOnlyModelViewSet):
         apikey = request.META.get("HTTP_APIKEY")
         if valid := ApiKey.valid(apikey):
             token = keycloak_access_token()
+            hashed_token = make_hash(token["access_token"])
             UserAccessToken.objects.create(
-                access_token=token["access_token"],
                 user=valid.user,
-                identifier=token["access_token"].split(".")[0],
+                hash_digest=hashed_token,
             )
             return Response(token)
         raise AuthenticationFailed()
