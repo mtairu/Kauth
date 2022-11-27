@@ -34,12 +34,12 @@ def kong_create_consumer(email: str):
     return TKongResponse(status_code=resp.status_code, content=resp)
 
 
-def kong_consumer_apikey(email):
+def kong_consumer_apikey():
     """
     Request for an APIKEY for a user (consumer) on KongGateway
     """
     resp = rq.post(
-        f"{DJ_KONG_ADMINAPI_BASEURI}/consumers/{email}/key-auth/",
+        f"{DJ_KONG_ADMINAPI_BASEURI}/consumers/kauthapp/key-auth/",
         timeout=3.0,
         headers={"apikey": DJ_KONG_ADMINAPI_KEY},
     )
@@ -66,11 +66,9 @@ def keycloak_create_account(email):
             {"temporary": "true"},
         ],
     }
-    return rq.post(
-        DJ_K_API_BASEURI + "/users/",
-        headers=headers,
-        json=new_user,
-    ).json()
+    resp = rq.post(DJ_K_API_BASEURI + "/users/", headers=headers, json=new_user)
+    if resp.status_code != 201:
+        resp.raise_for_status()
 
 
 def keycloak_access_token():
