@@ -186,3 +186,4 @@ tags
 # Persistent undo
 [._]*.un~
 /migrations
+.dev.env
