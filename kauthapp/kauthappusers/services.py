@@ -66,11 +66,9 @@ def keycloak_create_account(email):
             {"temporary": "true"},
         ],
     }
-    return rq.post(
-        DJ_K_API_BASEURI + "/users/",
-        headers=headers,
-        json=new_user,
-    ).json()
+    resp = rq.post(DJ_K_API_BASEURI + "/users/", headers=headers, json=new_user)
+    if resp.status_code != 201:
+        resp.raise_for_status()
 
 
 def keycloak_access_token():
