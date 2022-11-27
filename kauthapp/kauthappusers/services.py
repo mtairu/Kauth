@@ -34,12 +34,12 @@ def kong_create_consumer(email: str):
     return TKongResponse(status_code=resp.status_code, content=resp)
 
 
-def kong_consumer_apikey(email):
+def kong_consumer_apikey():
     """
     Request for an APIKEY for a user (consumer) on KongGateway
     """
     resp = rq.post(
-        f"{DJ_KONG_ADMINAPI_BASEURI}/consumers/{email}/key-auth/",
+        f"{DJ_KONG_ADMINAPI_BASEURI}/consumers/kauthapp/key-auth/",
         timeout=3.0,
         headers={"apikey": DJ_KONG_ADMINAPI_KEY},
     )

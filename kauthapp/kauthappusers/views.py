@@ -80,14 +80,10 @@ def oauth_provision_setup(request):
 
 @receiver(signal=user_registered)
 def oauth_provision_complete(request, sender, user, **kwargs):
-    consumer = kong_create_consumer(user.email)
-    if consumer.status_code == 201:
-        apikey = kong_consumer_apikey(user.email)
-        if apikey.status_code == 201:
-            new_key = apikey.content.json()["key"]
-            key = ApiKey.objects.create(key=new_key, user=user)
-        if key.id:
-            keycloak_create_account(user.email)
+    apikey = kong_consumer_apikey()
+    if apikey.status_code == 201:
+        new_key = apikey.content.json()["key"]
+        key = ApiKey.objects.create(key=new_key, user=user)
 
 
 @login_required
