@@ -7,10 +7,13 @@ COPY kauthapp .
 RUN pip install --no-cache-dir -r requirements.txt
 RUN apk add expect
 
+ARG DJ_DB_PASS
+ARG DJ_DB_HOST
+
 ENV  DJ_DB_NAME=django \
      DJ_DB_USER=django \
-     DJ_DB_PASS=django \
-     DJ_DB_HOST=database-1.cczlbrbs05gb.us-east-1.rds.amazonaws.com\
+     DJ_DB_PASS=$DJ_DB_PASS\
+     DJ_DB_HOST=$DJ_DB_HOST\
      DJ_SECRET_KEY=hkOCm7P86AsGHZampyL8mxeSBysJPbC_DITA14J7llU \
      DJ_DEBUG=True \
      DJ_HOSTNAME_STRICT=https://app.kauth.okzk.com\
@@ -25,7 +28,9 @@ ENV  DJ_DB_NAME=django \
      DJ_K_TOKEN_URI= \
      DJ_K_TOKEN_REVOKE_URI= \
      DJ_K_API_BASEURI= \
-     DJ_K_REALM=
+     DJ_K_REALM= \
+     DJ_KONG_ADMINAPI_BASEURI= \
+     DJ_KONG_ADMINAPI_KEY=
 
 RUN ./migrate.sh
 RUN ./create-admin.sh

@@ -13,13 +13,13 @@ prune-all:
 	sudo docker system prune --force
 
 build-keycloak:
-	sudo docker build -f Dockerfile.keycloak . -t keycloak-build --no-cache
+	sudo docker build -f Dockerfile.keycloak . -t keycloak-build --build-arg KEYCLOAK_ADMIN_PASSWORD=${KEYCLOAK_ADMIN_PASSWORD} --no-cache
 build-kong:
 	sudo docker build -f Dockerfile.kong . -t kong-build --no-cache
 build-nginx:
 	sudo docker build -f Dockerfile.nginx . -t nginx-build --no-cache
 build-django:
-	sudo docker build -f Dockerfile.django . -t django-build --no-cache
+	sudo docker build -f Dockerfile.django . -t django-build --build-arg DJ_DB_PASS=${DJ_DB_PASS}  --build-arg DJ_DB_HOST=${DJ_DB_HOST} --no-cache
 
 run-kong:
 	sudo docker run -d --net=host -p 127.0.0.1:8000:8000 -p 127.0.0.1:8001:8001 --env-file .dev.env kong-build
