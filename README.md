@@ -71,3 +71,8 @@
     1. make build-kong
     2. make migrate-kong
     3. make run-kong
+
+#### Check docker containers
+```sudo docker container ls```
+
+![enter image description here](https://i.imgur.com/kiWICtu.png)
