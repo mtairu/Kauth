@@ -48,3 +48,5 @@ push-django:
 	sudo docker push public.ecr.aws/${ECS_REGISTRY_ALIAS}/django-build:latest
 login-aws-cli:
 	sudo aws ecr-public get-login-password --region ${ECS_REGION} | docker login --username AWS --password-stdin public.ecr.aws/${ECS_REGISTRY_ALIAS}
+migrate-kong:
+	sudo docker run --rm -e "KONG_DATABASE=postgres" -e "KONG_PG_HOST=${KONG_PG_HOST}" -e "KONG_PG_USER=${KONG_PG_USER}" -e "KONG_PG_PASSWORD=${KONG_PG_PASSWORD}" kong-build kong migrations bootstrap
