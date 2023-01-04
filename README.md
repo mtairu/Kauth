@@ -105,10 +105,10 @@ This project integrates three services, which should be accessible via subdomain
 2. Find the admin default credentials in create-admin.sh script.
 3. Go to Oauth clients click add.![enter image description here](https://i.imgur.com/yaK9EXu.png)
 4. Set the following fields and save:
-	5. user -> djadmini
-	6. client id -> kauthapp
-	7. client secret -> client secret for kauthapp client on Keycloak
-	8. realm -> master
+	- user -> djadmin
+	- client id -> kauthapp
+	- client secret -> client secret for kauthapp client on Keycloak
+	- realm -> master
 ## TODO
 1. Add OAuth as an alternative login method.
 2. Use a realm besides master realm on Keycloak.
