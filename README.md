@@ -76,3 +76,39 @@
 ```sudo docker container ls```
 
 ![enter image description here](https://i.imgur.com/kiWICtu.png)
+
+## Services
+This project integrates three services, which should be accessible via subdomains created at https://dns.he.net. This repo is configured using https://kauth.okzk.com.
+1. Keycloak OAuth - https://oidc.kauth.okzk.com
+2. Django DRF - https://app.kauth.okzk.com
+3. Kong API Gateway - https://api.kauth.okzk.com
+
+![enter image description here](https://i.imgur.com/yDA6SMR.png)
+
+#### 1. Setup Keycloak http://oidc.kauth.okzk.com
+1. Login at https://oidc.kauth.okzk.com. Find the credentials in the .dev.env file.
+2. Go to Clients > Create Client
+3. Enter kauthapp in the client id field and save
+4. Go to Clients > kauthapp > Service Account Roles
+5. Click Assign Role
+6. Click Filter by Origin dropdown, select master-realm.![enter image description here](https://imgur.com/DlWZQWS.png)
+7. Search for manage-users. 
+![enter image description here](https://imgur.com/qXlWzv8.png)
+8. Select manage-users, then click Assign.
+9. Go to Clients > kauthapp > Settings > Capability Config 
+10. Turn on Client authentication, select Standard flow, Service accounts roles then Save. ![enter image description here](https://imgur.com/P8URLv9.png)
+11. Go to Clients > kauthapp > Credentials > Client secret
+12. Copy the Client secret.
+ 
+#### 2. Setup Django APP http://app.kauth.okzk.com
+1. Login at https://app.kauth.okzk.com/admin or whichever subdomain you designated in dns.he.net.
+2. Find the admin default credentials in create-admin.sh script.
+3. Go to Oauth clients click add.![enter image description here](https://i.imgur.com/yaK9EXu.png)
+4. Set the following fields and save:
+	5. user -> djadmini
+	6. client id -> kauthapp
+	7. client secret -> client secret for kauthapp client on Keycloak
+	8. realm -> master
+## TODO
+1. Add OAuth as an alternative login method.
+2. Use a realm besides master realm on Keycloak.
